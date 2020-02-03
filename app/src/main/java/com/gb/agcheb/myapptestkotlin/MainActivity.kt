@@ -24,13 +24,14 @@ class MainActivity : AppCompatActivity() {
         rv_notes.adapter = adapter
 
         viewModel.viewState().observe(this, Observer {
-//            Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+            //            Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
             it?.let { adapter.notes = it.notes }
 
         })
 
         btn_new_try.setOnClickListener {
             viewModel.updateState()
+            Toast.makeText(this, "Look! I've added smth!", Toast.LENGTH_SHORT).show()
         }
     }
 }

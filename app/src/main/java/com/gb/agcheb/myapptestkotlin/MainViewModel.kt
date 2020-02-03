@@ -20,5 +20,7 @@ class MainViewModel : ViewModel() {
 
     fun updateState() {
 //        viewStateLiveData.value = "Hello World!! It is " + (++repeatNum) + "try";
+        NotesRepository.addRandomNote(++repeatNum);
+        viewStateLiveData.value = MainViewState(NotesRepository.getNotes())
     }
 }

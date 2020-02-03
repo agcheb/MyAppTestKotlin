@@ -1,15 +1,18 @@
 package com.gb.agcheb.myapptestkotlin.data
 
+import android.graphics.Color
 import com.gb.agcheb.myapptestkotlin.data.entity.Note
+import java.util.*
 
 /**
  * Created by agcheb on 03.02.20.
  */
 object NotesRepository {
-    private val notes: List<Note>
+    private val notes: MutableList<Note>
+    private val rnd:Random = Random()
 
     init {
-        notes = listOf(
+        notes = mutableListOf(
                 Note(
                         "заметка 1",
                         "текст заметки 1. Не очень длинный, но и так сойдет",
@@ -43,7 +46,15 @@ object NotesRepository {
         )
     }
 
-    fun getNotes(): List<Note> {
+    fun getNotes(): MutableList<Note> {
         return notes
+    }
+
+    fun addRandomNote(num: Int) {
+        notes.add(Note(
+                "заметка $num",
+                "текст заметки $num. Не очень длинный, но и так сойдет",
+                Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
+        ))
     }
 }

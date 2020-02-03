@@ -24,7 +24,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:listitem="@layout/item_note" />
+        tools:listitem="@layout/item_note"
+        android:paddingBottom="45dp"/>
+        <!--надо посмотреть как иначе можно строго rv сделать выше кнопки-->
 
     <Button
         android:id="@+id/btn_new_try"
