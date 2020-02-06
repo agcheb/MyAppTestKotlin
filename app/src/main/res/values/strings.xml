@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">MyAppTestKotlin</string>
     <string name="push_me">PUSH ME</string>
+    <string name="hint_title">Заголовок</string>
+    <string name="hint_text_note">Текст заметки</string>
+    <string name="title_new_note">Новая заметка</string>
 </resources>
