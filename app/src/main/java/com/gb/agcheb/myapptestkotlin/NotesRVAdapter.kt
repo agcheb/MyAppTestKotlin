@@ -13,31 +13,31 @@ import kotlinx.android.synthetic.main.item_note.view.*
 /**
  * Created by agcheb on 03.02.20.
  */
-class NotesRVAdapter(val onItemViewClick : ((Note) -> Unit)? = null) : RecyclerView.Adapter<NotesRVAdapter.ViewHolder>() {
+class NotesRVAdapter(val onItemViewClick : ((note: Note) -> Unit)? = null) : RecyclerView.Adapter<NotesRVAdapter.ViewHolder>() {
+
     var notes: List<Note> = listOf()
         set(value) {
             field = value
             notifyDataSetChanged()
         }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
             ViewHolder(
                     LayoutInflater.from(parent.context).inflate(R.layout.item_note, parent, false)
             )
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) =
-            holder.bind(notes[position])
+    override fun getItemCount() = notes.size
 
-    override fun getItemCount(): Int = notes.size
+    override fun onBindViewHolder(vh: ViewHolder, pos: Int) = vh.bind(notes[pos])
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         fun bind(note: Note) = with(itemView) {
-            // Так делать не гуд, здесь не кешируется getByView -> каждый раз выполняется обращение
             tv_title.text = note.title
             tv_text.text = note.text
 
-            val color = when(note.color) {
+
+            val color = when(note.color){
                 Note.Color.WHITE -> R.color.white
                 Note.Color.YELLOW -> R.color.yellow
                 Note.Color.GREEN -> R.color.green
@@ -48,11 +48,11 @@ class NotesRVAdapter(val onItemViewClick : ((Note) -> Unit)? = null) : RecyclerV
             }
 
             (this as CardView).setCardBackgroundColor(ContextCompat.getColor(itemView.context, color))
-//            setBackgroundColor(color)
+
             itemView.setOnClickListener {
                 onItemViewClick?.invoke(note)
             }
-        }
 
+        }
     }
 }

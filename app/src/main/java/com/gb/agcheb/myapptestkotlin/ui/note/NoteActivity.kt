@@ -12,10 +12,10 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import com.gb.agcheb.myapptestkotlin.R
 import com.gb.agcheb.myapptestkotlin.data.entity.Note
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_note.*
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlinx.android.synthetic.main.activity_note.toolbar as toolbar1
 
 class NoteActivity : AppCompatActivity() {
     companion object {
@@ -44,7 +44,6 @@ class NoteActivity : AppCompatActivity() {
         }
 
         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
 
     }
@@ -55,7 +54,8 @@ class NoteActivity : AppCompatActivity() {
         setContentView(R.layout.activity_note)
 
         note = intent.getParcelableExtra(EXTRA_NOTE)
-        setSupportActionBar(toolbar)
+        setSupportActionBar(toolbar1)
+
         supportActionBar?.setDefaultDisplayHomeAsUpEnabled(true)
 
         viewModel = ViewModelProvider(this).get(NoteViewModel::class.java)
@@ -71,7 +71,6 @@ class NoteActivity : AppCompatActivity() {
         note?.let { note ->
             et_title.setText(note.title)
             et_body.setText(note.text)
-
             val color = when (note.color) {
                 Note.Color.WHITE -> R.color.white
                 Note.Color.YELLOW -> R.color.yellow
@@ -82,7 +81,7 @@ class NoteActivity : AppCompatActivity() {
                 Note.Color.PINK -> R.color.pink
             }
 
-            toolbar.setBackgroundColor(ContextCompat.getColor(this, color))
+            toolbar1.setBackgroundColor(ContextCompat.getColor(this, color))
         }
 
         et_title.addTextChangedListener(textChangeListener)
@@ -99,15 +98,16 @@ class NoteActivity : AppCompatActivity() {
                     lastChanged = Date()
             ) ?: createNewNote()
 
-            note?.let {viewModel.save(it)}
+            note?.let { viewModel.save(it) }
+
         }, SAVE_DELAY)
     }
 
     private fun createNewNote(): Note =
-        Note(UUID.randomUUID().toString(), et_title.text.toString(), et_body.text.toString(), Note.Color.WHITE)
+        Note(UUID.randomUUID().toString(), et_title.text.toString(), et_body.text.toString())
 
 
-    override fun onOptionsItemSelected(item: MenuItem):Boolean = when(item.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         android.R.id.home -> {
             onBackPressed()
             true
