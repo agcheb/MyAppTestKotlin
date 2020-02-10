@@ -56,7 +56,7 @@ class NoteActivity : AppCompatActivity() {
         note = intent.getParcelableExtra(EXTRA_NOTE)
         setSupportActionBar(toolbar1)
 
-        supportActionBar?.setDefaultDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         viewModel = ViewModelProvider(this).get(NoteViewModel::class.java)
 
