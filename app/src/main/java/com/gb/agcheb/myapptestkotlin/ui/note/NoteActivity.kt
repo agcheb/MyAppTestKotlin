@@ -12,26 +12,30 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import com.gb.agcheb.myapptestkotlin.R
 import com.gb.agcheb.myapptestkotlin.data.entity.Note
+import com.gb.agcheb.myapptestkotlin.ui.base.BaseActivity
 import kotlinx.android.synthetic.main.activity_note.*
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlinx.android.synthetic.main.activity_note.toolbar as toolbar1
 
-class NoteActivity : AppCompatActivity() {
+class NoteActivity : BaseActivity<Note?, NoteViewState>() {
     companion object {
         private val EXTRA_NOTE = NoteActivity::class.java.name + "extra.NOTE"
         private const val DATE_TIME_FORMAT = "dd.MM.yy HH:mm"
-        private const val SAVE_DELAY = 2000L
 
-        fun start(context: Context, note: Note? = null) {
+        fun start(context: Context, noteId: String? = null) {
             val intent = Intent(context, NoteActivity::class.java)
-            intent.putExtra(EXTRA_NOTE, note)
+            intent.putExtra(EXTRA_NOTE, noteId)
             context.startActivity(intent)
         }
     }
 
+    override val layoutRes = R.layout.activity_note
+    override val viewModel: NoteViewModel by lazy {
+        ViewModelProvider(this).get(NoteViewModel::class.java)
+    }
+
     private var note: Note? = null
-    lateinit var viewModel: NoteViewModel
 
 
     val textChangeListener = object : TextWatcher {
@@ -40,7 +44,6 @@ class NoteActivity : AppCompatActivity() {
         }
 
         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
 
         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -50,18 +53,23 @@ class NoteActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        setContentView(R.layout.activity_note)
-
-        note = intent.getParcelableExtra(EXTRA_NOTE)
         setSupportActionBar(toolbar1)
-
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        viewModel = ViewModelProvider(this).get(NoteViewModel::class.java)
+        val noteId = intent.getStringExtra(EXTRA_NOTE)
+        noteId?. let {
+            viewModel.loadNote(it)
+        } ?: let {
+            supportActionBar?.title = getString(R.string.title_new_note)
+        }
 
-        supportActionBar?.title = note?.let {
-            SimpleDateFormat(DATE_TIME_FORMAT, Locale.getDefault()).format(it.lastChanged)
+    }
+
+
+    override fun renderData(data: Note?) {
+        this.note = data
+        supportActionBar?.title = this.note?.let {
+            SimpleDateFormat(DATE_TIME_FORMAT, Locale.getDefault()).format(note!!.lastChanged)
         } ?: getString(R.string.title_new_note)
 
         initView()
@@ -91,16 +99,15 @@ class NoteActivity : AppCompatActivity() {
     fun saveNote() {
         if (et_title.text == null || et_title.text!!.length < 3) return
 
-        Handler().postDelayed({
-            note = note?.copy(
-                    title = et_title.text.toString(),
-                    text = et_body.text.toString(),
-                    lastChanged = Date()
-            ) ?: createNewNote()
 
-            note?.let { viewModel.save(it) }
+        note = note?.copy(
+                title = et_title.text.toString(),
+                text = et_body.text.toString(),
+                lastChanged = Date()
+        ) ?: createNewNote()
 
-        }, SAVE_DELAY)
+        note?.let { viewModel.save(it) }
+
     }
 
     private fun createNewNote(): Note =
@@ -114,4 +121,5 @@ class NoteActivity : AppCompatActivity() {
         }
         else -> super.onOptionsItemSelected(item)
     }
+
 }

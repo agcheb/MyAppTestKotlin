@@ -45,6 +45,8 @@ class MainActivity : BaseActivity<List<Note>?, MainViewState>() {
     }
 
     override fun renderData(data: List<Note>?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        data?.let {
+            adapter.notes = it
+        }
     }
 }

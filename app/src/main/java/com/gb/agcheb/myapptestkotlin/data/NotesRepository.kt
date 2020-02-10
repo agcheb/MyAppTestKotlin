@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.gb.agcheb.myapptestkotlin.data.entity.Note
 import com.gb.agcheb.myapptestkotlin.data.model.NoteResult
+import com.gb.agcheb.myapptestkotlin.data.provider.FireStoreProvider
 import com.gb.agcheb.myapptestkotlin.data.provider.RemoteDataProvider
 import java.util.*
 
@@ -11,19 +12,7 @@ import java.util.*
  * Created by agcheb on 03.02.20.
  */
 object NotesRepository {
-    private val remoteDataProvider: RemoteDataProvider = object : RemoteDataProvider {
-        override fun subscribeToAllNotes(): LiveData<NoteResult> {
-            return MutableLiveData<NoteResult>()
-        }
-
-        override fun getNoteById(id: String): LiveData<NoteResult> {
-            return MutableLiveData<NoteResult>()
-        }
-
-        override fun saveNote(note: Note): LiveData<NoteResult> {
-            return MutableLiveData<NoteResult>()
-        }
-    }
+    private val remoteDataProvider: RemoteDataProvider = FireStoreProvider()
 
     fun getNotes() = remoteDataProvider.subscribeToAllNotes()
     fun saveNote(note: Note) = remoteDataProvider.saveNote(note)

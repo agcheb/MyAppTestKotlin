@@ -13,7 +13,7 @@ import kotlinx.android.synthetic.main.item_note.view.*
 /**
  * Created by agcheb on 03.02.20.
  */
-class NotesRVAdapter(val onItemViewClick : ((note: Note) -> Unit)? = null) : RecyclerView.Adapter<NotesRVAdapter.ViewHolder>() {
+class NotesRVAdapter(val onItemViewClick : ((noteId: String) -> Unit)? = null) : RecyclerView.Adapter<NotesRVAdapter.ViewHolder>() {
 
     var notes: List<Note> = listOf()
         set(value) {
@@ -50,7 +50,7 @@ class NotesRVAdapter(val onItemViewClick : ((note: Note) -> Unit)? = null) : Rec
             (this as CardView).setCardBackgroundColor(ContextCompat.getColor(itemView.context, color))
 
             itemView.setOnClickListener {
-                onItemViewClick?.invoke(note)
+                onItemViewClick?.invoke(note.id)
             }
 
         }
