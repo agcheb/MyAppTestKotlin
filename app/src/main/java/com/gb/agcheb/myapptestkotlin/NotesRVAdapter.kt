@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
+import com.gb.agcheb.myapptestkotlin.commons.getColorInt
 import com.gb.agcheb.myapptestkotlin.data.entity.Note
 import kotlinx.android.synthetic.main.item_note.view.*
 
@@ -36,18 +37,7 @@ class NotesRVAdapter(val onItemViewClick : ((noteId: String) -> Unit)? = null) :
             tv_title.text = note.title
             tv_text.text = note.text
 
-
-            val color = when(note.color){
-                Note.Color.WHITE -> R.color.white
-                Note.Color.YELLOW -> R.color.yellow
-                Note.Color.GREEN -> R.color.green
-                Note.Color.BLUE -> R.color.blue
-                Note.Color.RED -> R.color.red
-                Note.Color.VIOLET -> R.color.violet
-                Note.Color.PINK -> R.color.pink
-            }
-
-            (this as CardView).setCardBackgroundColor(ContextCompat.getColor(itemView.context, color))
+            (this as CardView).setCardBackgroundColor(note.color.getColorInt(context))
 
             itemView.setOnClickListener {
                 onItemViewClick?.invoke(note.id)

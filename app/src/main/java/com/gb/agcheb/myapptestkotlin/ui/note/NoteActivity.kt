@@ -9,6 +9,8 @@ import android.view.MenuItem
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import com.gb.agcheb.myapptestkotlin.R
+import com.gb.agcheb.myapptestkotlin.commons.getColorInt
+import com.gb.agcheb.myapptestkotlin.commons.getColorRes
 import com.gb.agcheb.myapptestkotlin.data.entity.Note
 import com.gb.agcheb.myapptestkotlin.ui.base.BaseActivity
 import kotlinx.android.synthetic.main.activity_note.*
@@ -17,7 +19,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlinx.android.synthetic.main.activity_note.toolbar as toolbar1
 
-class NoteActivity : BaseActivity<Note?, NoteViewState>() {
+class NoteActivity : BaseActivity<NoteViewState.Data?, NoteViewState>() {
     companion object {
         private val EXTRA_NOTE = NoteActivity::class.java.name + "extra.NOTE"
         private const val DATE_TIME_FORMAT = "dd.MM.yy HH:mm"
@@ -63,8 +65,12 @@ class NoteActivity : BaseActivity<Note?, NoteViewState>() {
     }
 
 
-    override fun renderData(data: Note?) {
-        this.note = data
+    override fun renderData(data: NoteViewState.Data?) {
+        if (data?.isDeleted!!) {
+            finish()
+        }
+
+        this.note = data?.note
         supportActionBar?.title = this.note?.let {
             SimpleDateFormat(DATE_TIME_FORMAT, Locale.getDefault()).format(note!!.lastChanged)
         } ?: getString(R.string.title_new_note)
@@ -76,17 +82,10 @@ class NoteActivity : BaseActivity<Note?, NoteViewState>() {
         note?.let { note ->
             et_title.setText(note.title)
             et_body.setText(note.text)
-            val color = when (note.color) {
-                Note.Color.WHITE -> R.color.white
-                Note.Color.YELLOW -> R.color.yellow
-                Note.Color.GREEN -> R.color.green
-                Note.Color.BLUE -> R.color.blue
-                Note.Color.RED -> R.color.red
-                Note.Color.VIOLET -> R.color.violet
-                Note.Color.PINK -> R.color.pink
-            }
-
-            toolbar1.setBackgroundColor(ContextCompat.getColor(this, color))
+//            val color = note.color.getColorRes()
+//            toolbar1.setBackgroundColor(ContextCompat.getColor(this, color))
+//dva varianta
+            toolbar1.setBackgroundColor(note.color.getColorInt(this))
         }
 
         et_title.addTextChangedListener(textChangeListener)

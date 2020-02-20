@@ -16,4 +16,5 @@ class NotesRepository(val remoteDataProvider: RemoteDataProvider) {
     fun saveNote(note: Note) = remoteDataProvider.saveNote(note)
     fun getNoteById(id: String) = remoteDataProvider.getNoteById(id)
     fun getCurrentUser() = remoteDataProvider.getCurrentUser()
+    fun deleteNote(id: String) = remoteDataProvider.deleteNote(id)
 }

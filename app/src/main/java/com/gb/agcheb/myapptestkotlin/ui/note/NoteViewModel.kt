@@ -6,32 +6,32 @@ import com.gb.agcheb.myapptestkotlin.data.entity.Note
 import com.gb.agcheb.myapptestkotlin.data.model.NoteResult
 import com.gb.agcheb.myapptestkotlin.ui.base.BaseViewModel
 
-class NoteViewModel(private val notesRepository: NotesRepository): BaseViewModel<Note?, NoteViewState>() {
+class NoteViewModel(private val notesRepository: NotesRepository) : BaseViewModel<NoteViewState.Data?, NoteViewState>() {
     private var pendingNote: Note? = null
-
-    init {
-        viewStateLiveData.value = NoteViewState()
-    }
+        get() = viewStateLiveData.value?.data?.note
 
     fun save(note: Note) {
-        pendingNote = note
+        viewStateLiveData.value = NoteViewState(NoteViewState.Data(note = note))
+    }
+
+    fun delete(note: Note) {
+        pendingNote?.let { notesRepository.deleteNote(it.id).observeForever { result ->
+            viewStateLiveData.value = when (result) {
+                is NoteResult.Success<*> -> NoteViewState(NoteViewState.Data(isDeleted = true))
+                is NoteResult.Error -> NoteViewState(error = result.error)
+            }
+        } }
     }
 
     fun loadNote(noteId: String) {
-        notesRepository.getNoteById(noteId).observeForever(object : Observer<NoteResult> {
-            override fun onChanged(t: NoteResult?) {
-                t ?: return
-                when(t) {
-                    is NoteResult.Success<*> -> {
-                        viewStateLiveData.value = NoteViewState(note = t.data as? Note)
-                    }
-                    is NoteResult.Error -> {
-                        viewStateLiveData.value = NoteViewState(error = t.error)
-                    }
+        notesRepository.getNoteById(noteId).observeForever { result ->
+            result?.let {
+                viewStateLiveData.value = when (result) {
+                    is NoteResult.Success<*> -> NoteViewState(NoteViewState.Data(note = result.data as? Note))
+                    is NoteResult.Error -> NoteViewState(error = result.error)
                 }
             }
-
-        })
+        }
     }
 
     override fun onCleared() {
