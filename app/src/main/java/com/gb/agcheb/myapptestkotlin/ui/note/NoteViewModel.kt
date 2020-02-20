@@ -14,7 +14,7 @@ class NoteViewModel(private val notesRepository: NotesRepository) : BaseViewMode
         viewStateLiveData.value = NoteViewState(NoteViewState.Data(note = note))
     }
 
-    fun delete(note: Note) {
+    fun delete() {
         pendingNote?.let { notesRepository.deleteNote(it.id).observeForever { result ->
             viewStateLiveData.value = when (result) {
                 is NoteResult.Success<*> -> NoteViewState(NoteViewState.Data(isDeleted = true))

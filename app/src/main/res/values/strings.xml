@@ -9,4 +9,7 @@
     <string name="logout_dialog_title">Выход</string>
     <string name="logout_dialog_response_ok">Да</string>
     <string name="logout_dialog_response_no">Нет</string>
+    <string name="change_color">Изменить цвет</string>
+    <string name="delete_note_item">удалить заметку</string>
+    <string name="delete_sure_question">точно Удалить?</string>
 </resources>

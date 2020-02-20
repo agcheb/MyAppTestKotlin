@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.Menu
 import android.view.MenuItem
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
@@ -14,6 +15,7 @@ import com.gb.agcheb.myapptestkotlin.commons.getColorRes
 import com.gb.agcheb.myapptestkotlin.data.entity.Note
 import com.gb.agcheb.myapptestkotlin.ui.base.BaseActivity
 import kotlinx.android.synthetic.main.activity_note.*
+import org.jetbrains.anko.alert
 import org.koin.android.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.*
@@ -56,7 +58,7 @@ class NoteActivity : BaseActivity<NoteViewState.Data?, NoteViewState>() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         val noteId = intent.getStringExtra(EXTRA_NOTE)
-        noteId?. let {
+        noteId?.let {
             model.loadNote(it)
         } ?: let {
             supportActionBar?.title = getString(R.string.title_new_note)
@@ -107,15 +109,33 @@ class NoteActivity : BaseActivity<NoteViewState.Data?, NoteViewState>() {
     }
 
     private fun createNewNote(): Note =
-        Note(UUID.randomUUID().toString(), et_title.text.toString(), et_body.text.toString())
+            Note(UUID.randomUUID().toString(), et_title.text.toString(), et_body.text.toString())
 
+    override fun onCreateOptionsMenu(menu: Menu?) = menuInflater.inflate(R.menu.note, menu).let { true }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        android.R.id.home -> {
-            onBackPressed()
-            true
-        }
+        android.R.id.home -> onBackPressed().let { true }
+        R.id.palette -> togglePalette().let { true }
+        R.id.delete -> deleteNote().let { true }
         else -> super.onOptionsItemSelected(item)
     }
+
+    private fun togglePalette() {
+        if (colorPicker.isOpen) {
+            colorPicker.close()
+        } else {
+            colorPicker.open()
+        }
+    }
+
+
+    private fun deleteNote() {
+        alert {
+            messageResource = R.string.delete_sure_question
+            positiveButton(R.string.logout_dialog_response_ok) { model.delete() }
+            negativeButton(R.string.logout_dialog_response_no) { dialog -> dialog.dismiss() }
+        }.show()
+    }
+
 
 }
