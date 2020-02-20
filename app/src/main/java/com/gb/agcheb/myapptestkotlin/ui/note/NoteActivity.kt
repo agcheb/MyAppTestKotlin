@@ -37,6 +37,7 @@ class NoteActivity : BaseActivity<NoteViewState.Data?, NoteViewState>() {
     override val model: NoteViewModel by viewModel()
 
     private var note: Note? = null
+    private var color = Note.Color.WHITE
 
 
     val textChangeListener = object : TextWatcher {
@@ -62,6 +63,7 @@ class NoteActivity : BaseActivity<NoteViewState.Data?, NoteViewState>() {
             model.loadNote(it)
         } ?: let {
             supportActionBar?.title = getString(R.string.title_new_note)
+            initView()
         }
 
     }
@@ -82,16 +84,36 @@ class NoteActivity : BaseActivity<NoteViewState.Data?, NoteViewState>() {
 
     fun initView() {
         note?.let { note ->
+
+            removeEditListener()
             et_title.setText(note.title)
             et_body.setText(note.text)
 //            val color = note.color.getColorRes()
 //            toolbar1.setBackgroundColor(ContextCompat.getColor(this, color))
 //dva varianta
             toolbar1.setBackgroundColor(note.color.getColorInt(this))
+            supportActionBar?.title = SimpleDateFormat(DATE_TIME_FORMAT, Locale.getDefault()).format(note.lastChanged)
+        } ?: let {
+            supportActionBar?.title =   getString(R.string.title_new_note)
         }
 
-        et_title.addTextChangedListener(textChangeListener)
-        et_body.addTextChangedListener(textChangeListener)
+        setEditListener()
+
+        colorPicker.onColorClickListener = {
+            toolbar1.setBackgroundColor(color.getColorInt(this))
+            color = it
+            saveNote()
+        }
+    }
+
+    private fun removeEditListener(){
+        et_title.removeTextChangedListener(textChangeListener)
+        et_body.removeTextChangedListener(textChangeListener)
+    }
+
+    private fun setEditListener(){
+        et_title.removeTextChangedListener(textChangeListener)
+        et_body.removeTextChangedListener(textChangeListener)
     }
 
     fun saveNote() {
@@ -101,7 +123,8 @@ class NoteActivity : BaseActivity<NoteViewState.Data?, NoteViewState>() {
         note = note?.copy(
                 title = et_title.text.toString(),
                 text = et_body.text.toString(),
-                lastChanged = Date()
+                lastChanged = Date(),
+                color = color
         ) ?: createNewNote()
 
         note?.let { model.save(it) }
