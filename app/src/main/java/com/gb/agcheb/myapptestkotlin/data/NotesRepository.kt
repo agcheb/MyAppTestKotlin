@@ -11,9 +11,7 @@ import java.util.*
 /**
  * Created by agcheb on 03.02.20.
  */
-object NotesRepository {
-    private val remoteDataProvider: RemoteDataProvider = FireStoreProvider()
-
+class NotesRepository(val remoteDataProvider: RemoteDataProvider) {
     fun getNotes() = remoteDataProvider.subscribeToAllNotes()
     fun saveNote(note: Note) = remoteDataProvider.saveNote(note)
     fun getNoteById(id: String) = remoteDataProvider.getNoteById(id)

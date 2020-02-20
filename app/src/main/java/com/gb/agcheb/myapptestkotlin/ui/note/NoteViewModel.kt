@@ -6,7 +6,7 @@ import com.gb.agcheb.myapptestkotlin.data.entity.Note
 import com.gb.agcheb.myapptestkotlin.data.model.NoteResult
 import com.gb.agcheb.myapptestkotlin.ui.base.BaseViewModel
 
-class NoteViewModel: BaseViewModel<Note?, NoteViewState>() {
+class NoteViewModel(private val notesRepository: NotesRepository): BaseViewModel<Note?, NoteViewState>() {
     private var pendingNote: Note? = null
 
     init {
@@ -18,7 +18,7 @@ class NoteViewModel: BaseViewModel<Note?, NoteViewState>() {
     }
 
     fun loadNote(noteId: String) {
-        NotesRepository.getNoteById(noteId).observeForever(object : Observer<NoteResult> {
+        notesRepository.getNoteById(noteId).observeForever(object : Observer<NoteResult> {
             override fun onChanged(t: NoteResult?) {
                 t ?: return
                 when(t) {
@@ -36,7 +36,7 @@ class NoteViewModel: BaseViewModel<Note?, NoteViewState>() {
 
     override fun onCleared() {
         pendingNote?.let {
-            NotesRepository.saveNote(it)
+            notesRepository.saveNote(it)
         }
     }
 }

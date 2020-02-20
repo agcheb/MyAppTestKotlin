@@ -18,8 +18,10 @@ import com.gb.agcheb.myapptestkotlin.ui.base.BaseActivity
 import com.gb.agcheb.myapptestkotlin.ui.note.NoteActivity
 import com.gb.agcheb.myapptestkotlin.ui.splash.SplashActivity
 import kotlinx.android.synthetic.main.activity_main.*
+import org.jetbrains.anko.alert
+import org.koin.android.viewmodel.ext.android.viewModel
 
-class MainActivity : BaseActivity<List<Note>?, MainViewState>(), LogoutDialog.LogoutListener {
+class MainActivity : BaseActivity<List<Note>?, MainViewState>() {
 
     companion object {
         fun start(context: Context) = Intent(context, MainActivity::class.java).apply {
@@ -27,9 +29,7 @@ class MainActivity : BaseActivity<List<Note>?, MainViewState>(), LogoutDialog.Lo
         }
     }
 
-    override val viewModel: MainViewModel by lazy {
-        ViewModelProvider(this).get(MainViewModel::class.java)
-    }
+    override val model: MainViewModel by viewModel()
 
     override val layoutRes = R.layout.activity_main
     lateinit var adapter: NotesRVAdapter
@@ -65,10 +65,15 @@ class MainActivity : BaseActivity<List<Note>?, MainViewState>(), LogoutDialog.Lo
     }
 
     private fun showLogoutDialog() {
-        supportFragmentManager.findFragmentByTag(LogoutDialog.TAG) ?: LogoutDialog.createInstance().show(supportFragmentManager, LogoutDialog.TAG)
+        alert {
+            titleResource = R.string.logout_dialog_title
+            messageResource = R.string.logout_dialog_message
+            positiveButton(R.string.logout_dialog_response_ok) { onLogout() }
+            negativeButton(R.string.logout_dialog_response_no) { dialog -> dialog.dismiss() }
+        }
     }
 
-    override fun onLogout() {
+    private fun onLogout() {
         AuthUI.getInstance()
                 .signOut(this)
                 .addOnCompleteListener {

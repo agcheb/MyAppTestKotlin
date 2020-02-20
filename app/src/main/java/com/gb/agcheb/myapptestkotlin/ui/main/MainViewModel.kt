@@ -12,7 +12,7 @@ import com.gb.agcheb.myapptestkotlin.ui.base.BaseViewModel
 /**
  * Created by agcheb on 30.01.20.
  */
-class MainViewModel : BaseViewModel<List<Note>?, MainViewState>() {
+class MainViewModel(private val notesRepository: NotesRepository) : BaseViewModel<List<Note>?, MainViewState>() {
 
     private var repeatNum = 0;
     private val notesObserver = object : Observer<NoteResult> {
@@ -30,7 +30,7 @@ class MainViewModel : BaseViewModel<List<Note>?, MainViewState>() {
         }
     }
 
-    private val repositoryNotes = NotesRepository.getNotes()
+    private val repositoryNotes = notesRepository.getNotes()
 
     init {
         viewStateLiveData.value = MainViewState()
