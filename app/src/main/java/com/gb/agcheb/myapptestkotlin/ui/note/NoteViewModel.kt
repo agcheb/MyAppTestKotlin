@@ -44,7 +44,13 @@ class NoteViewModel(private val notesRepository: NotesRepository) : BaseViewMode
     @VisibleForTesting
     override public fun onCleared() {
         launch {
-            pendingNote?.let { notesRepository.saveNote(it) }
+            pendingNote?.let {
+                try {
+                    notesRepository.saveNote(it)
+                } catch (e: Throwable) {
+                    setError(e)
+                }
+            }
         }
     }
 }

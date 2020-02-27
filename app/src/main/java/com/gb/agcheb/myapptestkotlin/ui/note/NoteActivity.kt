@@ -11,10 +11,13 @@ import com.gb.agcheb.myapptestkotlin.R
 import com.gb.agcheb.myapptestkotlin.commons.getColorInt
 import com.gb.agcheb.myapptestkotlin.data.entity.Note
 import com.gb.agcheb.myapptestkotlin.ui.base.BaseActivity
+import kotlinx.android.synthetic.main.activity_note.*
+import org.jetbrains.anko.alert
+import org.koin.android.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
-class NoteActivity : BaseActivity<NoteData.Data?, NoteData>() {
+class NoteActivity : BaseActivity<NoteData>() {
     companion object {
         private val EXTRA_NOTE = NoteActivity::class.java.name + "extra.NOTE"
         private const val DATE_TIME_FORMAT = "dd.MM.yy HH:mm"
@@ -62,7 +65,7 @@ class NoteActivity : BaseActivity<NoteData.Data?, NoteData>() {
     }
 
 
-    override fun renderData(data: NoteData.Data?) {
+    override fun renderData(data: NoteData) {
         if (data?.isDeleted!!) {
             finish()
         }
