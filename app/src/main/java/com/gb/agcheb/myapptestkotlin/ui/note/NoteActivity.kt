@@ -7,21 +7,14 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.Menu
 import android.view.MenuItem
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProvider
 import com.gb.agcheb.myapptestkotlin.R
 import com.gb.agcheb.myapptestkotlin.commons.getColorInt
-import com.gb.agcheb.myapptestkotlin.commons.getColorRes
 import com.gb.agcheb.myapptestkotlin.data.entity.Note
 import com.gb.agcheb.myapptestkotlin.ui.base.BaseActivity
-import kotlinx.android.synthetic.main.activity_note.*
-import org.jetbrains.anko.alert
-import org.koin.android.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlinx.android.synthetic.main.activity_note.toolbar as toolbar1
 
-class NoteActivity : BaseActivity<NoteViewState.Data?, NoteViewState>() {
+class NoteActivity : BaseActivity<NoteData.Data?, NoteData>() {
     companion object {
         private val EXTRA_NOTE = NoteActivity::class.java.name + "extra.NOTE"
         private const val DATE_TIME_FORMAT = "dd.MM.yy HH:mm"
@@ -69,7 +62,7 @@ class NoteActivity : BaseActivity<NoteViewState.Data?, NoteViewState>() {
     }
 
 
-    override fun renderData(data: NoteViewState.Data?) {
+    override fun renderData(data: NoteData.Data?) {
         if (data?.isDeleted!!) {
             finish()
         }

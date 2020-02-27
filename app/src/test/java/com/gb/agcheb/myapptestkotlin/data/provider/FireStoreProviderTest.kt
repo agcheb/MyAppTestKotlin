@@ -5,42 +5,44 @@ import com.gb.agcheb.myapptestkotlin.data.entity.Note
 import com.gb.agcheb.myapptestkotlin.data.exceptions.NoAuthException
 import com.gb.agcheb.myapptestkotlin.data.model.NoteResult
 import com.google.android.gms.tasks.OnSuccessListener
-import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.*
 import io.mockk.*
-import junit.framework.Assert.assertEquals
-import junit.framework.Assert.assertTrue
 import org.junit.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 
 class FireStoreProviderTest {
 
     @get:Rule
-    val taskExevutorRule = InstantTaskExecutorRule()
+    val taskExecutorRule = InstantTaskExecutorRule()
 
     private val mockDb = mockk<FirebaseFirestore>()
     private val mockAuth = mockk<FirebaseAuth>()
-
     private val mockCollection = mockk<CollectionReference>()
     private val mockUser = mockk<FirebaseUser>()
 
     private val testNotes = listOf(Note("1"), Note("2"), Note("3"))
+
     private val mockDocument1 = mockk<DocumentSnapshot>()
     private val mockDocument2 = mockk<DocumentSnapshot>()
     private val mockDocument3 = mockk<DocumentSnapshot>()
 
     private val provider = FireStoreProvider(mockAuth, mockDb)
+
     companion object {
         @BeforeClass
         fun setupClass() {
 
         }
+
         @AfterClass
         fun shutDownClass() {
 
         }
     }
+
     @Before
     fun setup() {
         clearAllMocks()
@@ -60,9 +62,8 @@ class FireStoreProviderTest {
     }
 
 
-
     @Test
-    fun `should throw NoAuthException if no auth`(){
+    fun `should throw NoAuthException if no auth`() {
         var result: Any? = null
         every { mockAuth.currentUser } returns null
         provider.subscribeToAllNotes().observeForever {
@@ -72,7 +73,7 @@ class FireStoreProviderTest {
     }
 
     @Test
-    fun `savenote calls set`(){
+    fun `savenote calls set`() {
         val mockDocumentReference = mockk<DocumentReference>()
         every { mockCollection.document(testNotes[0].id) } returns mockDocumentReference
         provider.saveNote(testNotes[0])
@@ -80,7 +81,7 @@ class FireStoreProviderTest {
     }
 
     @Test
-    fun `subscribe to all notes return notes`(){
+    fun `subscribe to all notes return notes`() {
         var result: List<Note>? = null
         val mockSnapshot = mockk<QuerySnapshot>()
         val slot = slot<EventListener<QuerySnapshot>>()
@@ -88,33 +89,48 @@ class FireStoreProviderTest {
         every { mockSnapshot.documents } returns listOf(mockDocument1, mockDocument2, mockDocument3)
         every { mockCollection.addSnapshotListener(capture(slot)) } returns mockk()
 
-        provider.subscribeToAllNotes().observeForever{
+        provider.subscribeToAllNotes().observeForever {
             result = (it as? NoteResult.Success<List<Note>>)?.data
         }
         slot.captured.onEvent(mockSnapshot, null)
         assertEquals(testNotes, result)
     }
-// сомнительное решение показать на уроке примеры трехстрочных тестов с верифаем а сложный пример оставить на дз
+
+    //(error=io.mockk.MockKException: no answer found for: Task(#18).addOnFailureListener(com.gb.agcheb.myapptestkotlin.data.provider.FireStoreProvider$getNoteById$1$2@44cffc25))
     @Test
-    fun `get note by id calls get`(){
-        var result: Any? = null
-        val mockDocumentReference = mockk<DocumentReference>()
-        val lst = slot<OnSuccessListener<in DocumentSnapshot>>()
+    fun `get note by id calls get`() {
+        var result: Note? = null
+        val slot = slot<OnSuccessListener<DocumentSnapshot>>()
 
-    val taskoMock = mockk<Task<DocumentSnapshot>>()
-    every { mockCollection.document(testNotes[0].id).get() } returns taskoMock
-    every { taskoMock.addOnSuccessListener(capture(lst)) } returns taskoMock
-    every { taskoMock.addOnFailureListener(capture(slot())) } returns mockk()
+        every { mockCollection.document(testNotes[0].id).get().addOnSuccessListener(capture(slot)) } returns mockk()
+
+        provider.getNoteById(testNotes[0].id).observeForever {
+            print("im not fuckup")
+            print(it)
+            result = (it as? NoteResult.Success<Note>)?.data
+        }
+
+        slot.captured.onSuccess(mockDocument1)
+
+        assertEquals(testNotes[0], result)
+    }
+//    скопированный пример из классной работы последнего урока (не проходит тест)
+    @Test
+    fun `getNoteByIs should return Note`() {
+        var result: Note? = null
+        val slot = slot<OnSuccessListener<DocumentSnapshot>>()
+        every { mockCollection.document(testNotes[0].id).get().addOnSuccessListener (capture(slot))} returns mockk()
+
         provider.getNoteById(testNotes[0].id).observeForever{
-            result = (it as? NoteResult.Success<Note>)?.data      }
+            result = (it as? NoteResult.Success<Note>)?.data
+        }
 
-        lst.captured.onSuccess(mockDocument1)
-
+        slot.captured.onSuccess(mockDocument1)
         assertEquals(testNotes[0], result)
     }
 
     @Test
-    fun `delete note calls delete`(){
+    fun `delete note calls delete`() {
         val mockDocumentReference = mockk<DocumentReference>()
         every { mockCollection.document(testNotes[0].id) } returns mockDocumentReference
         provider.deleteNote(testNotes[0].id)
